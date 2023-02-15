@@ -8,6 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(routes.userRoute);
+app.use(routes.categoriesRoute);
 
 // ...
 

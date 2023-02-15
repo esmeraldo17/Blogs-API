@@ -13,6 +13,17 @@ const userInputValidation = (body) => {
     return null;
 };
 
+const categorySchema = joi.object({
+    name: joi.string().min(3).required(),
+});
+
+const categoryInputValidation = (body) => {
+    const { error } = categorySchema.validate(body);
+    if (error) return error.message;
+    return null;
+};
+
 module.exports = {
     userInputValidation,
+    categoryInputValidation,
 };
