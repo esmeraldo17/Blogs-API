@@ -32,7 +32,18 @@ const createUser = async (body) => {
     return { type: '', message: JWTtoken };
 };
 
+const getAll = async () => {
+    const users = await User.findAll();
+    const userFilter = users.map((e) => {
+        const { dataValues } = e;
+        delete dataValues.password;
+        return dataValues;
+    });
+      return { type: '', message: userFilter };
+};
+
 module.exports = {
     checkUser,
     createUser,
+    getAll,
 };
