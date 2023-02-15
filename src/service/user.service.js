@@ -42,8 +42,18 @@ const getAll = async () => {
       return { type: '', message: userFilter };
 };
 
+const getById = async (id) => {
+    const user = await User.findOne({ where: +id });
+
+    if (!user) return { type: 404, message: 'User does not exist' };
+    delete user.dataValues.password;
+
+    return { type: '', message: user };
+};
+
 module.exports = {
     checkUser,
     createUser,
     getAll,
+    getById,
 };
