@@ -7,10 +7,10 @@ module.exports = (Sequelize, DataTypes) => {
           primaryKey: true,
           autoIncrement: true,
           allowNull: false,
-          foreignKey: true,
         },
         title: {
           type: DataTypes.STRING,
+          allowNull: false,
         },
         content: {
           type: DataTypes.STRING,
@@ -21,22 +21,20 @@ module.exports = (Sequelize, DataTypes) => {
         },
         published: {
           type: DataTypes.DATE,
-          allowNull: false,
         },
         updated: {
           type: DataTypes.DATE,
-          allowNull: false,
         },
-      },
-      {
-        timestams: false,
+      }, {
         underscored: true,
         tableName: 'blog_posts',
-      },
+        timestamps: false,
+      }
     )
     BlogPosts.associate = ({ User }) => {
       BlogPosts.belongsTo(User, {
-        foreignKey: 'id',
+        foreignKey: 'userId',
+        as: 'user'
       })
     }
     return BlogPosts
