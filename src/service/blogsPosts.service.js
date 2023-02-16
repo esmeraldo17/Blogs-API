@@ -1,35 +1,37 @@
 const { BlogPost,
         User,
         Category,
-        // PostCategory,
+        PostCategory,
       } = require('../models');
 
-// const createPost = async (email, body) => {
-//     const { title, content, categoryIds } = body;
+const createPost = async (email, body) => {
+    const { title, content, categoryIds } = body;
+    console.log(email);
 
-//     if (!title || !content || !categoryIds) {
-//         return { type: 400, message: 'Some required fields are missing' };
-//     }
+    if (!title || !content || !categoryIds) {
+        return { type: 400, message: 'Some required fields are missing' };
+    } 
 
-//     if (categoryIds.length === 0) {
-//        return { type: 400, message: 'one or more "categoryIds" not found' };
-//     }
+    if (categoryIds.length === 0) {
+       return { type: 400, message: 'one or more "categoryIds" not found' };
+    }
 
-//     const { id } = await User.findOne({ where: { email } });
+    const { id } = await User.findOne({ where: { email } });
 
-//     const post = await BlogPost.create({ title, content, userId: id });
-//     const createdPost = await BlogPost.findByPk(post.id);
+    const post = await BlogPost.create({ title, content, userId: id });
+    const createdPost = await BlogPost.findByPk(post.id);
 
-//     const postId = 'post_id';
-//     const categoryId = 'category_id';
+    const postId = 'post_id';
+    const categoryId = 'category_id';
 
-//     const category = categoryIds.map((e) => ({ [postId]: createdPost.id, [categoryId]: +e }));
+    const category = categoryIds.map((e) => ({ [postId]: createdPost.id, [categoryId]: +e }));
 
-//     console.log(category);
-//     await PostCategory.bulkCreate(category);
+    await Promise.all(category.map(async (e) => {
+      await PostCategory.bulkCreate(e);
+    }));
  
-//     return { type: '', message: createdPost };
-// };
+    return { type: '', message: createdPost };
+};
 
 const getAll = async () => {
     const post = await BlogPost.findAll({
@@ -69,8 +71,35 @@ const getById = async (id) => {
     return { type: '', message: post };
 };
 
+const updatePost = async (idPost, email, body) => {
+      const { title, content } = body;
+      if (!title || !content) {
+          return { type: 400, message: 'Some required fields are missing' };
+      }
+  
+      const { id } = await User.findOne({ where: { email } });
+
+      const post = await getById(idPost);
+
+      if (post.message.userId !== id) {
+        return { type: 401, message: 'Unauthorized user' };
+      }
+
+      await BlogPost.update(
+        { title, content },
+        {
+          where: { id: idPost },
+        },
+      );
+    
+      const upatedPost = await getById(idPost);
+    
+      return { type: '', message: upatedPost.message };
+    };
+
 module.exports = {
-    // createPost,
+    createPost,
     getAll,
     getById,
+    updatePost,
 };

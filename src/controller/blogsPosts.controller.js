@@ -1,12 +1,12 @@
 const { blogsPostsService } = require('../service');
 
-// const createPost = async (req, res) => {
-//     const { type, message } = await blogsPostsService.createPost(req.user, req.body);
+const createPost = async (req, res) => {
+    const { type, message } = await blogsPostsService.createPost(req.user, req.body);
 
-//     if (type) return res.status(type).json({ message });
+    if (type) return res.status(type).json({ message });
 
-//     res.status(201).json(message);
-// };
+    res.status(201).json(message);
+};
 
 const getAll = async (_req, res) => {
     const { message } = await blogsPostsService.getAll();
@@ -21,8 +21,18 @@ const getById = async (req, res) => {
     res.status(200).json(message);
 };
 
+const updatePost = async (req, res) => {
+    const { id } = req.params;
+    console.log(req.user);
+    const { type, message } = await blogsPostsService.updatePost(id, req.user, req.body);
+    
+    if (type) return res.status(type).json({ message });
+    
+    res.status(200).json(message);
+};
 module.exports = {
-    // createPost,
+    createPost,
     getAll,
     getById,
+    updatePost,
 };
