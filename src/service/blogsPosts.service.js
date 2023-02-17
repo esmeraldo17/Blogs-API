@@ -6,11 +6,6 @@ const { BlogPost,
 
 const createPost = async (email, body) => {
     const { title, content, categoryIds } = body;
-    console.log(email);
-
-    if (!title || !content || !categoryIds) {
-        return { type: 400, message: 'Some required fields are missing' };
-    } 
 
     if (categoryIds.length === 0) {
        return { type: 400, message: 'one or more "categoryIds" not found' };
@@ -18,17 +13,22 @@ const createPost = async (email, body) => {
 
     const { id } = await User.findOne({ where: { email } });
 
+    const existsAllCategories = await Promise.all(
+      categoryIds.map(async (e) => Category.findByPk(e)),
+    );
+
+    if (existsAllCategories.some((e) => e === null)) {
+      return { type: 400, message: 'one or more "categoryIds" not found' };
+   }
+
     const post = await BlogPost.create({ title, content, userId: id });
     const createdPost = await BlogPost.findByPk(post.id);
 
-    const postId = 'post_id';
-    const categoryId = 'category_id';
-
-    const category = categoryIds.map((e) => ({ [postId]: createdPost.id, [categoryId]: +e }));
+    const category = categoryIds.map((e) => ({ postId: createdPost.id, categoryId: +e }));
 
     await Promise.all(category.map(async (e) => {
-      await PostCategory.bulkCreate(e);
-    }));
+      await PostCategory.create(e);
+     }));
  
     return { type: '', message: createdPost };
 };
