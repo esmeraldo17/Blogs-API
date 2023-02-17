@@ -97,9 +97,27 @@ const updatePost = async (idPost, email, body) => {
       return { type: '', message: upatedPost.message };
     };
 
+    const removePost = async (idPost, email) => {
+      const { id } = await User.findOne({ where: { email } });
+
+      const postToDelete = await BlogPost.findByPk(idPost);
+      if (!postToDelete) return { type: 404, message: 'Post does not exist' };
+
+      if (postToDelete.userId !== id) {
+        return { type: 401, message: 'Unauthorized user' };
+      }
+
+      await BlogPost.destroy({
+        where: { id: idPost },
+      });
+    
+      return { type: '', message: '' };
+    };
+
 module.exports = {
     createPost,
     getAll,
     getById,
     updatePost,
+    removePost,
 };
